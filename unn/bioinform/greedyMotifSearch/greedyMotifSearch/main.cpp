@@ -11,7 +11,7 @@ int getScore(const vector<string>& motifs);
 
 int main(int argc, char* argv[])
 {
-    const size_t k = 3;
+    const size_t k = 12;
     ifstream file("input.txt");
     if (!file.is_open())
     {
@@ -85,14 +85,14 @@ string getMostProbableKmer(const vector<string>& profile, const string& dnaRow, 
     }
 
     float maxProb = 0;
-    string motif("");
+    string motif(dnaRow.substr(0, k));
     for (size_t pos = k; pos <= dnaRow.size(); pos++)
     {
         string kmer = dnaRow.substr(pos - k, k);
-        float kmerProb = 0;
+        float kmerProb = 1;
         for (int j = 0; j < k; j++)
         {
-            kmerProb += table[kmer[j]][j];
+            kmerProb *= table[kmer[j]][j];
         }
 
         if (kmerProb > maxProb)

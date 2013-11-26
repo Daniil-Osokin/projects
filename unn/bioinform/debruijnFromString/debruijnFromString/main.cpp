@@ -51,7 +51,7 @@ vector<tuple<string, vector<string> > > getDebruijnFromString(const string& text
 
         vector<string> edges;
         edges.push_back(text.substr(pos + 1, k - 1));
-        for (size_t start = pos + 1; start < text.size() - (k - 2); start++)
+        for (size_t start = pos + 1; start < text.size() - (k - 1); start++)
         {
             if (kmer == text.substr(start, k - 1))
             {

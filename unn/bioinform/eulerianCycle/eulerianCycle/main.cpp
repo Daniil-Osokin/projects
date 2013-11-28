@@ -93,7 +93,7 @@ void addNewCycle(vector<Edge>& edges, vector<Edge>& cycle, int startEdgeId)
     newCycle.push_back(edges[startEdgeId]);
     do
     {
-        for (size_t i = 1; i < edges.size(); i++)
+        for (size_t i = 0; i < edges.size(); i++)
         {
             if (edges[i].label && edges[i].v1 == newCycle[newCycle.size() - 1].v2)
             {

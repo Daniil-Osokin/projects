@@ -5,3 +5,5 @@ Release
 *.user
 *.sln
 *.suo
+libs
+obj

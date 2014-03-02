@@ -10,7 +10,7 @@ using namespace std;
 
 PerfMetrics calculate(vector<double>& times)
 {
-	sort(times.begin(), times.end());
+    sort(times.begin(), times.end());
 
     double gmean = 0;
     double gstddev = 0;

@@ -45,24 +45,17 @@ PerfMetrics calculate(vector<double>& times)
     n = 0;
     gmean = 0;
     gstddev = 0;
-    double mean = 0;
-    double stddev = 0;
     int m = 0;
     for(; start != end; ++start)
     {
         double x = *start;
-        if (x > DBL_EPSILON)
-        {
-            double lx = log(x);
-            ++m;
-            double gdelta = lx - gmean;
-            gmean += gdelta / m;
-            gstddev += gdelta * (lx - gmean);
-        }
-        ++n;
-        double delta = x - mean;
-        mean += delta / n;
-        stddev += delta * (x - mean);
+        if (x < DBL_EPSILON) continue;
+        double lx = log(x);
+
+        ++m;
+        double gdelta = lx - gmean;
+        gmean += gdelta / m;
+        gstddev += gdelta * (lx - gmean);
     }
 
     PerfMetrics metrics;

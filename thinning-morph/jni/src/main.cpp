@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 
 #include <thinning_morph.hpp>
+#include <perf.hpp>
  
 using namespace std;
 using namespace cv;
@@ -32,10 +33,12 @@ int main(int argc, char* argv[])
     	t = ((double)getTickCount() - t)/getTickFrequency() * 1000;
     	times.push_back(t);
 	}
-	sort(times.begin(), times.end());
-	cout << "Me: "
-	     << ((times.size() % 2) ? times[ntimes / 2] : 0.5 * (times[ntimes / 2 - 1] + times[ntimes / 2]))
-	     << " ms" << endl;
+    
+    PerfMetrics metrics = calculate(times);
+    cout << "gmean   " << metrics.gmean   << " ms" << endl
+         << "gstddev " << metrics.gstddev << " ms" << endl
+         << "median  " << metrics.median  << " ms" << endl;
+
 
     string dst_filename(src_filename.substr(0, src_filename.find(".")) + "_dst.png");
     imwrite(dst_filename, dst);

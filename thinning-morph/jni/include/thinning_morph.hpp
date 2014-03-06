@@ -13,4 +13,12 @@
  */
 void thinning_gold(cv::Mat& im);
 
+/**
+ * Function for thinning the given binary image
+ * optimized version
+ *
+ * @param  im  Binary image with range = 0-255
+ */
+void thinning_opt(cv::Mat& im);
+
 #endif // THINNING_MORPH_HPP

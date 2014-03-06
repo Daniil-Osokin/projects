@@ -10,6 +10,8 @@
 using namespace std;
 using namespace cv;
 
+void checkResult(const Mat& src, const Mat& dst);
+
 int main(int argc, char* argv[])
 {
     CV_Assert(argc > 1);
@@ -31,10 +33,12 @@ int main(int argc, char* argv[])
             bw.copyTo(dst);
 
             double t = (double)getTickCount();
-            thinning_gold(dst);
+            thinning_opt(dst);
             t = ((double)getTickCount() - t)/getTickFrequency() * 1000;
             times.push_back(t);
         }
+
+        checkResult(bw, dst);
 
         PerfMetrics metrics = calculate(times);
         cout << "gmean   " << metrics.gmean   << " ms" << endl
@@ -47,4 +51,14 @@ int main(int argc, char* argv[])
     }
 
     return 0;
+}
+
+void checkResult(const Mat& src, const Mat& dst)
+{
+    Mat gold;
+    src.copyTo(gold);
+    thinning_gold(gold);
+    Mat diff;
+    absdiff(gold, dst, diff);
+    CV_Assert(countNonZero(diff) == 0);
 }

@@ -60,18 +60,18 @@ void thinning_gold(Mat& im)
     im *= 255;
 }
 
-static void thinningIterationOpt(Mat& im, int iter)
+static void thinningIterationOpt(Mat& im, Mat& im_next, int& removed, int iter)
 {
-    Mat marker = Mat::zeros(im.size(), CV_8UC1);
-
     for (int i = 1; i < im.rows-1; i++)
     {
         uchar* row0 = im.row(i-1).data;
         uchar* row1 = im.row(i+0).data;
         uchar* row2 = im.row(i+1).data;
-        uchar* mrow = marker.row(i).data;
+        uchar* mrow = im_next.row(i).data;
         for (int j = 1; j < im.cols-1; j++)
         {
+            if (!row1[j]) continue;
+
             uchar p9 = row0[j-1];
             uchar p2 = row0[j];
             uchar p3 = row0[j+1];
@@ -94,27 +94,29 @@ static void thinningIterationOpt(Mat& im, int iter)
                      (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
 
             if (A == 1)
-                mrow[j] = 1;
+            {
+                mrow[j] = 0;
+                removed++;
+            }
         }
     }
-
-    im &= ~marker;
 }
 
 void thinning_opt(Mat& im)
 {
     im /= 255;
+    Mat im_next;
+    im.copyTo(im_next);
 
-    Mat prev = Mat::zeros(im.size(), CV_8UC1);
-    Mat diff;
-
+    int removed;
     do {
-        thinningIterationOpt(im, 0);
-        thinningIterationOpt(im, 1);
-        absdiff(im, prev, diff);
-        im.copyTo(prev);
+        removed = 0;
+        thinningIterationOpt(im, im_next, removed, 0);
+        im_next.copyTo(im);
+        thinningIterationOpt(im, im_next, removed, 1);
+        im_next.copyTo(im);
     } 
-    while (countNonZero(diff) > 0);
+    while (removed > 0);
 
     im *= 255;
 }

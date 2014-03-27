@@ -21,4 +21,6 @@ void thinning_gold(cv::Mat& im);
  */
 void thinning_opt(cv::Mat& im);
 
+void thinning_opt_m(cv::Mat& im);
+
 #endif // THINNING_MORPH_HPP

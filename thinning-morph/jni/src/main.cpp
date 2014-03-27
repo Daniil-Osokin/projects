@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
             bw.copyTo(dst);
 
             double t = (double)getTickCount();
-            thinning_opt(dst);
+            thinning_opt_m(dst);
             t = ((double)getTickCount() - t)/getTickFrequency() * 1000;
             times.push_back(t);
         }

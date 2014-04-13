@@ -37,17 +37,15 @@ int main(int argc, char* argv[])
             t = ((double)getTickCount() - t)/getTickFrequency() * 1000;
             times.push_back(t);
         }
-
-        checkResult(bw, dst);
-
         PerfMetrics metrics = calculate(times);
         cout << "gmean   " << metrics.gmean   << " ms" << endl
              << "gstddev " << metrics.gstddev << " ms" << endl
              << "median  " << metrics.median  << " ms" << endl << endl;
 
-
         string dst_filename(src_filename.substr(0, src_filename.find(".")) + "_dst.png");
         imwrite(dst_filename, dst);
+
+        checkResult(bw, dst);
     }
 
     return 0;

@@ -46,42 +46,43 @@ def find_control(class_name = None,
 
         if class_name and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if class_name == ctl.GetCurrentPropertyValue(AutomationElement.ClassNameProperty)]
+                if class_name == ctl.ClassName]
 
         if class_name_re and matched_controls:
             class_name_regex = re.compile(class_name_re)
             matched_controls = [ctl for ctl in matched_controls
-                if class_name_regex.match(ctl.GetCurrentPropertyValue(AutomationElement.ClassNameProperty))]
+                if class_name_regex.match(ctlClassName)]
 
         if title and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if title == ctl.GetCurrentPropertyValue(AutomationElement.NameProperty)]
+                if title == ctl.Name]
 
         if title_re and matched_controls:
             title_regex = re.compile(title_re)
             matched_controls = [ctl for ctl in matched_controls
-                if title_regex.match(ctl.GetCurrentPropertyValue(AutomationElement.NameProperty))]
+                if title_regex.match(ctl.Name)]
 
         if visible_only and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if not ctl.GetCurrentPropertyValue(AutomationElement.IsOffscreenProperty)]
+                if not ctl.GetSupportedProperties()['IsOffscreen']]
 
         if enabled_only and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if ctl.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty)]
+                if ctl.IsEnabled]
 
         if auto_id and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if auto_id == ctl.GetCurrentPropertyValue(AutomationElement.AutomationIdProperty)]
+                if auto_id == ctl.AutomationId]
 
         if control_type and matched_controls:
             matched_controls = [ctl for ctl in matched_controls
-                if control_type == ctl.GetCurrentPropertyValue(AutomationElement.ControlTypeProperty)]
+                if control_type == ctl.GetSupportedProperties()['ControlType']]
 
         return matched_controls
 
+    rootElement = PythonicAutomationElement(AutomationElement.RootElement)
     matched_controls = []
-    controls = AutomationElement.RootElement.FindAll(TreeScope.Children,
+    controls = rootElement.FindAll(TreeScope.Children,
         PropertyCondition(AutomationElement.IsControlElementProperty, True))
     matched_controls = find_controls(controls, class_name, class_name_re,
             title, title_re, visible_only, enabled_only, auto_id, control_type)
@@ -93,7 +94,7 @@ def find_control(class_name = None,
                 title, title_re, visible_only, enabled_only, auto_id, control_type)
 
     if (len(matched_controls) == 1):
-      return PythonicAutomationElement(matched_controls[0])
+      return matched_controls[0]
     elif (len(matched_controls) > 1):
       raise WindowAmbiguousError()
     else:

@@ -25,38 +25,40 @@ class ControlSpecification(dict):
         self['top_level_only'] = top_level_only
         self.def_timeout = 1
 
-    def __IsInState(self, wait_for, ctl):
-        is_passed = True
-        if 'exists' in wait_for:
-            if not ctl:
-                is_passed = False
-        if 'visible' in wait_for:
-            if not ctl or ctl.GetSupportedProperties()['IsOffscreen']:
-                is_passed = False
-        if 'enabled' in wait_for:
-            if not ctl or not ctl.IsEnabled:
-                is_passed = False
-        if is_passed:
-            return ctl
-        return is_passed
-
-    def __IsNotInState(self, wait_for, ctl):
-        is_passed = True
-        try:
+        def IsInState(wait_for, ctl):
+            is_passed = True
             if 'exists' in wait_for:
-                if ctl and ctl.IsEnabled:
+                if not ctl:
                     is_passed = False
             if 'visible' in wait_for:
-                if ctl and not ctl.GetSupportedProperties()['IsOffscreen']:
+                if not ctl or ctl.GetSupportedProperties()['IsOffscreen']:
                     is_passed = False
             if 'enabled' in wait_for:
-                if ctl and ctl.IsEnabled:
+                if not ctl or not ctl.IsEnabled:
                     is_passed = False
-        except SystemError: #control was closed
-            return True
-        return is_passed
+            if is_passed:
+                return ctl
+            return is_passed
+        self.IsInStateCallback = IsInState
 
-    def __WaitWithCondition(self, wait_for, timeout, retry_interval, cond):
+        def IsNotInState(wait_for, ctl):
+            is_passed = True
+            try:
+                if 'exists' in wait_for:
+                    if ctl and ctl.IsEnabled:
+                        is_passed = False
+                if 'visible' in wait_for:
+                    if ctl and not ctl.GetSupportedProperties()['IsOffscreen']:
+                        is_passed = False
+                if 'enabled' in wait_for:
+                    if ctl and ctl.IsEnabled:
+                        is_passed = False
+            except SystemError: #control was closed
+                return True
+            return is_passed
+        self.IsNotInStateCallback = IsNotInState
+
+    def __WaitWithCallback(self, wait_for, timeout, retry_interval, callback):
         if not timeout:
             timeout = self.def_timeout
         if not retry_interval:
@@ -78,7 +80,7 @@ class ControlSpecification(dict):
             except WindowNotFoundError:
                 pass
 
-            res = cond(wait_for, ctl)
+            res = callback(wait_for, ctl)
             if res:
                 return res
 
@@ -87,7 +89,7 @@ class ControlSpecification(dict):
         raise TimeoutError()
 
     def Wait(self, wait_for, timeout=None, retry_interval=None):
-        return self.__WaitWithCondition(wait_for, timeout, retry_interval, self.__IsInState)
+        return self.__WaitWithCallback(wait_for, timeout, retry_interval, self.IsInStateCallback)
 
     def WaitNot(self, wait_for, timeout=None, retry_interval=None):
-        return self.__WaitWithCondition(wait_for, timeout, retry_interval, self.__IsNotInState)
+        return self.__WaitWithCallback(wait_for, timeout, retry_interval, self.IsNotInStateCallback)

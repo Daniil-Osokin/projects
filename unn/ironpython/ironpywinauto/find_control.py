@@ -5,6 +5,10 @@ from System.Windows.Automation import AutomationElement, TreeScope, PropertyCond
 from . import WindowNotFoundError, WindowAmbiguousError
 from .automation_element import PythonicAutomationElement
 
+#Fix for bug with handling ArrayList
+clr.AddReferenceToFile('misc/uiauto.dll')
+import iprcs
+
 def find_control(class_name = None,
                  class_name_re = None,
                  title = None,
@@ -80,7 +84,7 @@ def find_control(class_name = None,
 
         return matched_controls
 
-    rootElement = PythonicAutomationElement(AutomationElement.RootElement)
+    rootElement = PythonicAutomationElement(iprcs.uiauto().RootElement())
     matched_controls = []
     controls = rootElement.FindAll(TreeScope.Children,
         PropertyCondition(AutomationElement.IsControlElementProperty, True))

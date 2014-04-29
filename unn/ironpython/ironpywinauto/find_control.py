@@ -6,7 +6,7 @@ from . import WindowNotFoundError, WindowAmbiguousError
 from .automation_element import PythonicAutomationElement
 
 #Fix for bug with handling ArrayList
-clr.AddReferenceToFile('misc/uiauto.dll')
+clr.AddReferenceToFile('asm/uiauto')
 import iprcs
 
 def find_control(class_name = None,
